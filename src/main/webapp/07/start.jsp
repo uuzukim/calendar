@@ -1,0 +1,29 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="UTF-8"%>
+
+<%--
+	// 1. A를 대상으로 발생한 요청 접수 
+	String path = "/07/dest.jsp";
+	RequestDispatcher rd = request.getRequestDispatcher(path);
+	// 2-1. 1번의 요청을 가지고 분기. - request dispatch, forwrad
+	request.setAttribute("requestAttr", "요청 속성"); // forward에서는 얘가 forward보다 먼저 있어야 얘가 출력됨.왜? forward로 보내고나서는 reqA는 사라지니까 
+	rd.forward(request, response);
+	// 2-2. 1번의 요청을 가지고 분기. - request dispatch, include
+// 	rd.include(request, response);
+	// 3. B로부터 복귀 
+	
+	// 4. A+B의 응답 전송
+	
+	
+--%>
+<%
+	// 1. A를 대상으로 발생한 요청 접수
+	// 2. body가 없는 response전송 (302, location) 
+	request.setAttribute("requestAttr", "요청 속성");
+	session.setAttribute("sessionAttr", "세션 속성");
+	String location = request.getContextPath() + "/07/dest.jsp?param="+request.getParameter("param");
+	response.sendRedirect(location);
+%>
+
+<h4>이 문장이 보이는지 확인</h4>
+

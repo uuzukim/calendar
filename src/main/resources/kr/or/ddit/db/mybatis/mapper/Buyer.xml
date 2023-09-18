@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.buyer.dao.BuyerDAO">
+
+	<select id="selectBuyerList" resultType="BuyerVO">
+
+		SELECT
+		BUYER_ID,
+		BUYER_NAME,
+		LPROD_NM "lprod.lprodNm",
+		BUYER_ADD1,
+		BUYER_COMTEL,
+		BUYER_CHARGER
+		FROM
+		BUYER INNER JOIN LPROD ON(BUYER_LGU = LPROD_GU)
+	</select>
+
+	<insert id="insertBuyer" parameterType="BuyerVO">
+		<selectKey order="BEFORE" resultType="string"
+			keyProperty="buyerId">
+			SELECT #{buyerLgu} ||
+			LPAD(NVL(TO_NUMBER(SUBSTR(MAX(BUYER_ID),5)),0)
+			+1,2,'0')
+			FROM BUYER
+			WHERE BUYER_LGU = #{buyerLgu}
+		</selectKey>
+		INSERT INTO BUYER (
+		BUYER_ID,
+		BUYER_NAME,
+		BUYER_LGU,
+		BUYER_BANK,
+		BUYER_BANKNO,
+		BUYER_BANKNAME,
+		BUYER_ZIP,
+		BUYER_ADD1,
+		BUYER_ADD2,
+		BUYER_COMTEL,
+		BUYER_FAX,
+		BUYER_MAIL,
+		BUYER_CHARGER,
+		BUYER_TELEXT
+		) VALUES (
+		#{buyerId,jdbcType=CHAR}
+		, #{buyerName,jdbcType=VARCHAR}
+		,
+		#{buyerLgu,jdbcType=CHAR}
+		, #{buyerBank,jdbcType=VARCHAR}
+		,
+		#{buyerBankno,jdbcType=VARCHAR}
+		, #{buyerBankname,jdbcType=VARCHAR}
+		,
+		#{buyerZip,jdbcType=CHAR}
+		, #{buyerAdd1,jdbcType=VARCHAR}
+		,
+		#{buyerAdd2,jdbcType=VARCHAR}
+		, #{buyerComtel,jdbcType=VARCHAR}
+		,
+		#{buyerFax,jdbcType=VARCHAR}
+		, #{buyerMail,jdbcType=VARCHAR}
+		,
+		#{buyerCharger,jdbcType=VARCHAR}
+		, #{buyerTelext,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="selectBuyer" parameterType="string"
+		resultType="BuyerVO">
+		SELECT 
+		BUYER_ID, 
+		BUYER_NAME, 
+		BUYER_LGU , 
+		BUYER_BANK, 
+		BUYER_BANKNO,
+		BUYER_BANKNAME , 
+		BUYER_ZIP, 
+		BUYER_ADD1, 
+		BUYER_ADD2 , 
+		BUYER_COMTEL,
+		BUYER_FAX, 
+		BUYER_MAIL , 
+		BUYER_CHARGER, 
+		BUYER_TELEXT , 
+		LPROD_NM "lprod.lprodNm"
+		FROM BUYER INNER JOIN LPROD ON (BUYER_LGU = LPROD_GU)
+		LEFT OUTER JOIN PROD ON (BUYER_ID = PROD_BUYER)
+		WHERE BUYER_ID = #{buyerId}
+	</select>
+
+
+</mapper>

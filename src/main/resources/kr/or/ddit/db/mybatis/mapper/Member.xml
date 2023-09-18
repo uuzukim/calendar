@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.member.dao.MemberDAO">
+	<select id="selectMemberForAuth" parameterType="string"
+		resultType="MemberVO">
+		SELECT MEM_ID, MEM_PASS, MEM_NAME
+		, MEM_HP, MEM_MAIL
+		FROM MEMBER
+		WHERE MEM_ID =#{memId} AND MEM_DELETE IS NULL
+	</select>
+	<select id="selectMemberList" resultType="MemberVO">
+		SELECT MEM_ID,
+		MEM_NAME, MEM_HP, MEM_MAIL, MEM_BIR, MEM_ADD1, MEM_MILEAGE
+		FROM MEMBER
+	</select>
+
+	<resultMap type="MemberVO" id="memberMap" autoMapping="true">
+		<id property="memId" column="MEM_ID"/>
+		<collection property="prodList" ofType="ProdVO" autoMapping="true"></collection>
+	</resultMap>
+	<select id="selectMember" parameterType="string" resultMap="memberMap">
+		
+		WITH CARTVIEW AS(
+			SELECT CART_MEMBER, CART_PROD, PROD_ID, PROD_NAME
+				, PROD_PRICE
+				, LPROD_NM "lprod.lprodNm"
+			FROM CART INNER JOIN PROD ON (CART_PROD = PROD_ID) 
+						INNER JOIN LPROD ON	(PROD_LGU = LPROD_GU)
+		)
+		SELECT
+		MEM_ID,
+		MEM_PASS,
+		MEM_NAME,
+		MEM_REGNO1,
+		MEM_REGNO2,
+		MEM_BIR,
+		MEM_ZIP,
+		MEM_ADD1,
+		MEM_ADD2,
+		MEM_HOMETEL,
+		MEM_COMTEL,
+		MEM_HP,
+		MEM_MAIL,
+		MEM_JOB,
+		MEM_LIKE,
+		MEM_MEMORIAL,
+		MEM_MEMORIALDAY,
+		MEM_MILEAGE,
+		MEM_DELETE
+			, CARTVIEW.*
+		FROM MEMBER LEFT OUTER JOIN CARTVIEW ON (MEM_ID = CART_MEMBER)   
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<insert id="insertMember" parameterType="MemberVO" >
+	INSERT INTO MEMBER (
+	    MEM_ID,
+	    MEM_PASS,
+	    MEM_NAME,
+	    MEM_REGNO1,
+	    MEM_REGNO2,
+	    MEM_BIR,
+	    MEM_ZIP,
+	    MEM_ADD1,
+	    MEM_ADD2,
+	    MEM_HOMETEL,
+	    MEM_COMTEL,
+	    MEM_HP,
+	    MEM_MAIL,
+	    MEM_JOB,
+	    MEM_LIKE,
+	    MEM_MEMORIAL,
+	    MEM_MEMORIALDAY,
+	    MEM_MILEAGE
+	    
+	    
+	) VALUES (
+		
+	     #{memId,jdbcType=VARCHAR}
+		, #{memPass,jdbcType=VARCHAR}
+		, #{memName,jdbcType=VARCHAR}
+		, #{memRegno1,jdbcType=CHAR}
+		, #{memRegno2,jdbcType=CHAR}
+		, #{memBir,jdbcType=DATE}
+		, #{memZip,jdbcType=CHAR}
+		, #{memAdd1,jdbcType=VARCHAR}
+		, #{memAdd2,jdbcType=VARCHAR}
+		, #{memHometel,jdbcType=VARCHAR}
+		, #{memComtel,jdbcType=VARCHAR}
+		, #{memHp,jdbcType=VARCHAR}
+		, #{memMail,jdbcType=VARCHAR}
+		, #{memJob,jdbcType=VARCHAR}
+		, #{memLike,jdbcType=VARCHAR}
+		, #{memMemorial,jdbcType=VARCHAR}
+		, #{memMemorialday,jdbcType=DATE}
+		
+		)
+	</insert>
+	<!-- VO에 MEMDELETE는 있찌만 사용자에게 값을 받을필요는 없지? 그래서 삭제함. 탈퇴를 하면 숫자 1, 활동중이면 NULL -->
+	<!-- 그리고 가입하면 마일리지를 얼마나 줄건지 내가 정해서 미리 값을 넣어놈. -->
+	
+	   <update id="updateMember" parameterType="MemberVO">
+         UPDATE MEMBER SET
+          MEM_ZIP= #{memZip,jdbcType=CHAR}
+         , MEM_ADD1= #{memAdd1,jdbcType=VARCHAR}
+         , MEM_ADD2= #{memAdd2,jdbcType=VARCHAR}
+         , MEM_HOMETEL= #{memHometel,jdbcType=VARCHAR}
+         , MEM_COMTEL= #{memComtel,jdbcType=VARCHAR}
+         , MEM_HP= #{memHp,jdbcType=VARCHAR}
+         , MEM_MAIL= #{memMail,jdbcType=VARCHAR}
+         , MEM_JOB= #{memJob,jdbcType=VARCHAR}
+         , MEM_LIKE= #{memLike,jdbcType=VARCHAR}
+         , MEM_MEMORIAL= #{memMemorial,jdbcType=VARCHAR}
+         , MEM_MEMORIALDAY= #{memMemorialday,jdbcType=DATE}
+      WHERE
+          MEM_ID= #{memId}
+   </update>
+   
+   <delete id="deleteMember" parameterType="String" >
+   		UPDATE MEMBER
+   		SET
+   		MEM_DELETE ='1'
+		WHERE MEM_ID = #{memId}
+   </delete>
+</mapper>	

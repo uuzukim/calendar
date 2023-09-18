@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- appender (where)어디에 기록할거야? -->
+<!-- layout (how format) 어떤 형식으로 기록할거야? -->
+<!-- logger(who) 누가 기록할거야?  : log event level 소유(TRACE -> DEBUG-> INFO-> WARN-> ERROR-> FATAL)-->
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{1.} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+   <Logger name="kr.or.ddit" level="info" additivity="false">
+      <AppenderRef ref="Console"/>
+   </Logger>   
+   <Logger name="jdbc.sqltiming" level="debug" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+   <Logger name="jdbc.resultsettable" level="debug" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+    <Root level="error">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+</Configuration>
